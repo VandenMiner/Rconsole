@@ -1,0 +1,364 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+<Login>:
+	w_rcon_ip: rcon_ip
+	w_rcon_port: rcon_port
+	w_rcon_pass: rcon_pass
+	MDGridLayout:
+		cols: 1
+		rows: 4
+
+		padding: 30
+		spacing: 100
+
+		MDTextField:
+			id: rcon_ip
+			hint_text: 'Rcon ip'
+			required: True
+			helper_text_mode: "on_error"
+			helper_text: "Обязательное поле!"
+		MDTextField:
+			id: rcon_port
+			hint_text: 'Rcon port'
+			required: True
+			helper_text_mode: "on_error"
+			helper_text: "Обязательное поле!"
+		MDTextField:
+			id: rcon_pass
+			password: True
+			hint_text: 'Rcon password'
+			required: True
+			helper_text_mode: "on_error"
+			helper_text: "Обязательное поле!"
+		MDFillRoundFlatButton:
+			text: 'Ready'
+			size_hint_x: 1
+			on_press: root.readytologin()
+			elevation_normal: 6
+	MDFloatingActionButton:
+		icon: 'backup-restore'
+		pos_hint: {'center_x': 0.92, 'center_y': 0.07}
+		md_bg_color: get_color_from_hex("#95cddb")
+		text_color: get_color_from_hex("#000000")
+		text_color: 1, 1, 1, 1
+		on_release: root.autofillfields()
+<Rconsole>:
+	md_bg_color: get_color_from_hex("#1C1D22")
+	w_coreprotect_mainscreenmanager: coreprotect_mainscreenmanager
+
+	w_coreprotect_playerlist: coreprotect_playerlist
+
+	w_selectedcoreprotect_u: selectedcoreprotect_u
+	w_selectedcoreprotect_t: selectedcoreprotect_t
+	w_selectedcoreprotect_r: selectedcoreprotect_r
+	w_selectedcoreprotect_a: selectedcoreprotect_a
+	w_selectedcoreprotect_b: selectedcoreprotect_b
+	w_selectedcoreprotect_e: selectedcoreprotect_e
+
+
+	w_playerlistscreen: playerlistscreen
+	w_mainnavigation: mainnavigation
+	w_duration: duration
+	w_reason: reason
+	w_moderation: moderation
+	w_chat: chat
+	w_console: console
+	w_commandboxlayout: commandboxlayout
+	w_commandinput: commandinput
+	MDBottomNavigation:
+		id: mainnavigation
+		text_color_normal: get_color_from_hex("#848597")
+		panel_color: get_color_from_hex("#27282F")
+		MDBottomNavigationItem:
+			icon: 'console-line'
+			name: 'consoletab'
+			MDBoxLayout:
+				md_bg_color: get_color_from_hex("#1C1D22")
+				id: commandboxlayout
+				padding: 10
+				spacing: 20
+				orientation: 'vertical'
+				ScrollView:
+					canvas.before:
+						Color:
+							rgba: get_color_from_hex("#27282F")
+						Rectangle:
+							pos: self.pos
+							size: self.size
+					padding: 20
+					do_scroll_x: False
+					do_scroll_y: True
+					MDLabel:
+						id: console
+						size_hint_y: None
+						height: self.texture_size[1]
+						text_size: self.width, None
+						text_color: get_color_from_hex("#78c4d6")
+						theme_text_color: 'Custom'
+				MDTextField:
+					id: commandinput
+					multiline: False
+					hint_text: 'Console command'
+					pos_hint: {'center_x':0.5, 'center_y': 0.5}
+					on_text_validate: root.sendcommand(self.text)
+				
+		MDBottomNavigationItem:
+			name: 'screen 2'
+			icon: 'gesture-tap-button'
+			MDGridLayout:
+				cols: 2
+				rows: 3
+				spacing: 20
+				padding: 10
+				md_bg_color: get_color_from_hex("#1C1D22")
+				MDFillRoundFlatButton:
+					text: 'tellraw @a {"text":""}'
+					size_hint: 1, 1
+					font_size: 20
+					on_release: root.appendtocommand(self.text)
+				MDFillRoundFlatButton:
+					text: 'title @a title{"text":""}'
+					size_hint: 1, 1
+					font_size: 20
+					on_release: root.appendtocommand(self.text)
+				MDFillRoundFlatButton:
+					text: 'say '
+					size_hint: 1, 1
+					font_size: 20
+					on_release: root.appendtocommand(self.text)
+				MDFillRoundFlatButton:
+					text: 'broadcast '
+					size_hint: 1, 1
+					font_size: 20
+					on_release: root.appendtocommand(self.text)
+				MDFillRoundFlatButton:
+					text: 'gamemode 3 '
+					size_hint: 1, 1
+					font_size: 20
+					on_release: root.appendtocommand(self.text)
+				MDFillRoundFlatButton:
+					text: 'gamemode 1 '
+					size_hint: 1, 1
+					font_size: 20
+					on_release: root.appendtocommand(self.text)
+		MDBottomNavigationItem:
+			on_tab_press: root.refreshchat()
+			icon: 'chat'
+			name: 'screen 3'
+			MDBoxLayout:
+				md_bg_color: get_color_from_hex("#1C1D22")
+			ScrollView:
+				padding: 20
+				do_scroll_x: False
+				do_scroll_y: True
+				MDLabel:
+					id: chat
+					size_hint_y: None
+					height: self.texture_size[1]
+					text_size: self.width, None
+					text_color: get_color_from_hex("#78c4d6")
+					theme_text_color: 'Custom'
+					padding: 10, 10
+			MDFloatingActionButton:
+				icon: 'refresh'
+				pos_hint: {'center_x': 0.92, 'center_y': 0.953}
+				md_bg_color: get_color_from_hex("#1A5FD4")
+				text_color: 1, 1, 1, 1
+				on_release: root.refreshchat()
+					
+		MDBottomNavigationItem:
+			icon: 'block-helper'
+			name: 'tests'
+			on_tab_press: root.moderation_refreshplayerlist()
+			ScreenManager:
+				id: moderation
+				Screen:
+					name: 'Players'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+					ScrollView:
+						id: playerlistscreen
+				Screen:
+					name: 'Options'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+						orientation: 'vertical'
+						padding: 50
+						spacing: 30
+						MDFillRoundFlatButton:
+							size_hint: 1, 1
+							font_size: 50
+							text: '/ban'  
+							on_release: root.moderation_selectoprtion("ban")
+						MDFillRoundFlatButton:
+							size_hint: 1, 1
+							font_size: 50
+							text: '/mute'
+							on_release: root.moderation_selectoprtion("mute")
+						MDFillRoundFlatButton:
+							size_hint: 1, 1
+							font_size: 50
+							text: '/warn'
+							on_release: root.moderation_selectoprtion("warn")
+				Screen:
+					name: 'Reason'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+						padding: 20
+						MDTextField:
+							id: reason
+							pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+							hint_text: 'Reason'
+							line_color_normal: get_color_from_hex("#95cddb")
+					MDFloatingActionButton:
+						icon: 'arrow-right-bold-circle-outline'
+						pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+						md_bg_color: get_color_from_hex("#95cddb")
+						text_color: 1, 1, 1, 1
+						on_release: root.moderation_selectreason()
+				Screen:
+					name: 'Duration'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+						padding: 20
+						MDTextField:
+							id: duration
+							pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+							hint_text: 'Duration (minutes)'
+							line_color_normal: get_color_from_hex("#95cddb")
+					MDFloatingActionButton:
+						icon: 'arrow-right-bold-circle-outline'
+						pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+						md_bg_color: get_color_from_hex("#95cddb")
+						text_color: 1, 1, 1, 1
+						on_release: root.moderation_selectduration()
+
+			MDFloatingActionButton:
+				icon: 'refresh'
+				pos_hint: {'center_x': 0.92, 'center_y': 0.953}
+				md_bg_color: get_color_from_hex("#1A5FD4")
+				text_color: 1, 1, 1, 1
+				on_release: root.moderation_reset()
+		MDBottomNavigationItem:
+			icon: 'earth'
+			name: 'coreprotect'
+			ScreenManager:
+				id: coreprotect_mainscreenmanager
+				Screen:
+					name: 'MainScreen'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+						padding: 30
+						spacing: 20
+						size_hint: 1,1
+						orientation: 'vertical'
+						MDLabel: 
+							font_size: 40
+							halign: 'center'
+							text: 'CoreProtect options'
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+						MDFillRoundFlatButton:
+							size_hint: 1, 1
+							text: 'Ready!'
+							font_size: 30
+							on_release:
+								root.w_coreprotect_mainscreenmanager.current = 'UserSelection'
+								root.coreprotect_refreshplayerlist()
+					MDFloatingActionButton:
+						icon: 'information-outline'
+						pos_hint: {'center_x': 0.92, 'center_y': 0.953}
+						md_bg_color: get_color_from_hex("#95cddb")
+						text_color: 1, 1, 1, 1
+						on_release: 
+							root.coreprotect_getcurrentstats()
+							root.w_coreprotect_mainscreenmanager.transition.direction = 'right'
+							root.w_coreprotect_mainscreenmanager.current = 'GetSelectedInfo'
+				Screen:
+					name: 'GetSelectedInfo'
+					MDBoxLayout:
+						padding: 20
+						md_bg_color: get_color_from_hex("#1C1D22")
+						orientation: 'vertical'
+						MDLabel:
+							id: selectedcoreprotect_u
+							text: 'Selected user: '
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+						MDLabel:
+							id: selectedcoreprotect_t
+							text: 'Selected time: '
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+						MDLabel:
+							id: selectedcoreprotect_r
+							text: 'Selected radius: '
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+						MDLabel:
+							id: selectedcoreprotect_a
+							text: 'Selected action: '
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+						MDLabel:
+							id: selectedcoreprotect_b
+							text: 'Selected blocks: '
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+						MDLabel:
+							id: selectedcoreprotect_e
+							text: 'Selected exclude: '
+							text_color: get_color_from_hex("#78c4d6")
+							theme_text_color: 'Custom'
+					MDFloatingActionButton:
+						icon: 'arrow-right-bold-circle-outline'
+						pos_hint: {'center_x': 0.92, 'center_y': 0.953}
+						md_bg_color: get_color_from_hex("#95cddb")
+						text_color: 1, 1, 1, 1
+						on_release:
+							root.w_coreprotect_mainscreenmanager.transition.direction = 'left'
+							root.w_coreprotect_mainscreenmanager.current = 'MainScreen'
+				Screen:
+					name: 'UserSelection'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+					ScrollView:
+						id: coreprotect_playerlist
+				Screen:
+					name: 'SelectOptions'
+					MDBoxLayout:
+						md_bg_color: get_color_from_hex("#1C1D22")
+						orientation: 'vertical'
+						padding: 20
+						spacing: 20
+						MDFillRoundFlatButton:
+							text: 'Time'
+							size_hint: 1, 1
+							font_size: 30
+						MDFillRoundFlatButton:
+							text: 'Radius'
+							size_hint: 1, 1
+							font_size: 30
+						MDFillRoundFlatButton:
+							text: 'Action'
+							size_hint: 1, 1
+							font_size: 30
+						MDFillRoundFlatButton:
+							text: 'Blocks'
+							size_hint: 1, 1
+							font_size: 30
+						MDFillRoundFlatButton:
+							text: 'Exclude'
+							size_hint: 1, 1
+							font_size: 30
+
+<TimeChooserPopup@Popup>:
+    BoxLayout:
+        orientation: "vertical"
+
+        CircularTimePicker
+
+        Button:
+            text: "Dismiss"
+            size_hint_y: None
+            height: "40dp"
+            on_release: root.dismiss()
